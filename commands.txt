@@ -1,0 +1,39 @@
+aws cognito-idp sign-up \
+  --region us-east-1 \
+  --client-id 1im6a36mes510oabud7cd7jte6 \
+  --username admin@example.com \
+  --password Passw0rd!
+
+
+
+aws cognito-idp admin-confirm-sign-up \
+  --region us-east-1 \
+  --user-pool-id us-east-1_G25s7dUDi \
+  --username admin@example.com
+
+
+aws lambda create-function \
+  --function-name notes-app-create-note \
+  --handler create \
+  --runtime java8 \
+  --memory 512 \
+  --timeout 10 \
+  --role arn:aws:iam::771777619346:role/cljs-lambda-default \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda update-function-code \
+  --function-name notes-app-create-note \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda create-function \
+  --function-name notes-app-get-note \
+  --handler get \
+  --runtime java8 \
+  --memory 512 \
+  --timeout 10 \
+  --role arn:aws:iam::771777619346:role/cljs-lambda-default \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda update-function-code \
+  --function-name notes-app-get-note \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
