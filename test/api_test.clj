@@ -5,6 +5,7 @@
             [get :as get]
             [list :as list]
             [update :as update]
+            [delete :as delete]
             [clojure.core]
             [taoensso.faraday :as far]
             [environ.core :as environ]
@@ -13,7 +14,7 @@
 (def client-opts
   {:endpoint (environ/env :db-address)})
 
-(defn myfixture [block]
+(defn my-fixture [block]
   (do
     (far/create-table client-opts :notes
                       [:userId :s]                          ; Primary key named "id", (:n => number type)
@@ -24,7 +25,16 @@
     (block)
     (far/delete-table client-opts :notes)))
 
-(use-fixtures :once myfixture)
+(use-fixtures :once my-fixture)
+
+(defn list-notes
+  "List all notes for the test user"
+  []
+  (json/read-json
+    (get-in
+      (list/handle-event
+        {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}}) [:body]))
+  )
 
 (deftest test-uuid
   (testing "Generating uuid"
@@ -52,10 +62,7 @@
                    (json/read-json
                      (get-in res [:body])))))))
     (testing "Get item from db"
-      (let [notes (json/read-json
-                    (get-in
-                      (list/handle-event
-                        {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}}) [:body]))
+      (let [notes (list-notes)
             note (get/handle-event
                    {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}
                     :pathParameters {:id (get-in notes [0 :noteId])}})]
@@ -70,10 +77,7 @@
                     :pathParameters {:id "0"}})]
         (is (= "500" (get-in note [:statusCode])))))
     (testing "Update item in db"
-      (let [notes (json/read-json
-                    (get-in
-                      (list/handle-event
-                        {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}}) [:body]))
+      (let [notes (list-notes)
             res (update/handle-event {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}
                                       :pathParameters {:id (get-in notes [0 :noteId])}
                                       :body           "{\"content\":\"new world\",\"attachment\":\"new.jpg\"}"})]
@@ -81,4 +85,15 @@
         (is (= true (get-in
                       (json/read-json
                         (get-in res [:body]))
-                      [:status])))))))
+                      [:status])))))
+    (testing "Delete item from db"
+      (let [notes (list-notes)
+            res (delete/handle-event {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}
+                                      :pathParameters {:id (get-in notes [0 :noteId])}})]
+        (is (= "200" (get-in res [:statusCode])))
+        (is (= true (get-in
+                      (json/read-json
+                        (get-in res [:body]))
+                      [:status]))))
+      (let [notes (list-notes)]
+        (is (= 1 (count notes)))))))

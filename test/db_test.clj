@@ -32,6 +32,8 @@
     (testing "List items"
       (db/call "put-item" :test {:userId "USER-SUB-1234" :noteId "2" :testData "test-data"})
       (db/call "put-item" :test {:userId "USER-SUB-1234" :noteId "3" :testData "test-data"})
+      ;; Put one item for other userId and it should not affect tests
+      (db/call "put-item" :test {:userId "USER2-SUB-1234" :noteId "100" :testData "test-data"})
       (let [res (db/call "query" :test {:userId [:eq "USER-SUB-1234"]})]
         (is (= 3 (count res)))))
     (testing "Update item"
@@ -39,5 +41,9 @@
                          {:update-expr "SET testData = :testData"
                           :expr-attr-vals {":testData" "new-test-data"}
                           :return :all-new})]
-        (is (= "new-test-data" (get-in res [:testData])))))))
+        (is (= "new-test-data" (get-in res [:testData])))))
+    (testing "Delete item"
+      (db/call "delete-item" :test {:userId "USER-SUB-1234" :noteId "1"})
+      (let [res (db/call "query" :test {:userId [:eq "USER-SUB-1234"]})]
+        (is (= 2 (count res)))))))
 
