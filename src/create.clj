@@ -5,7 +5,8 @@
             [clojure.java.io :as io]
             [clojure.pprint :refer [pprint]]
             [helpers.db :as db]
-            [helpers.responses :refer [success failure]]))
+            [helpers.responses :refer [success failure]]
+            [helpers.json-handler :as jh]))
 
 (defn uuid [] (str (java.util.UUID/randomUUID)))
 
@@ -25,8 +26,4 @@
       (catch Exception e (pprint e) (failure (.getMessage e))))))
 
 (defn -handleRequest [this is os context]
-  (let [w (io/writer os)]
-    (-> (json/read (io/reader is) :key-fn keyword)
-        (handle-event)
-        (json/write w))
-    (.flush w)))
+  (jh/handle this is os context handle-event))

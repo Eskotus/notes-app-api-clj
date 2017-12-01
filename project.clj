@@ -6,9 +6,7 @@
                  [com.amazonaws/aws-lambda-java-events "2.0"]
                  [environ "1.0.0"]]
   :plugins      [[lein-environ "1.0.0"]
-                 [lein-dynamodb-local "0.2.10"]
-                 [refactor-nrepl "1.1.0"]
-                 [cider/cider-nrepl "0.9.1"]]
+                 [lein-dynamodb-local "0.2.10"]]
   :profiles     {:debug      {:debug true}
                  :dev        {:env {:clj-env :development
                                     :db-address "http://localhost:8001"}}
