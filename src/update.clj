@@ -18,7 +18,7 @@
                                ":attachment" (get-in data [:attachment])}
               :return :all-new}]
     (try
-      (db/call "update" :notes param)
+      (db/call "update-item" :notes param opts)
       (res/success {:status true})
       (catch Exception e (pprint e) (res/failure {:status false})))))
 

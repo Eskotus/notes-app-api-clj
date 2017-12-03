@@ -85,7 +85,16 @@
         (is (= true (get-in
                       (json/read-json
                         (get-in res [:body]))
-                      [:status])))))
+                      [:status])))
+        (is (= "new world"
+               (get-in
+                 (json/read-json
+                   (get-in
+                     (get/handle-event
+                       {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}
+                        :pathParameters {:id (get-in notes [0 :noteId])}})
+                     [:body]))
+                 [:content])))))
     (testing "Delete item from db"
       (let [notes (list-notes)
             res (delete/handle-event {:requestContext {:identity {:cognitoIdentityId "USER-SUB-1234"}}
