@@ -42,7 +42,7 @@
 
 (deftest test-now
   (testing "Get current time in millis"
-    (is (number? (.getTime (create/now))))))
+    (is (number? (create/now)))))
 
 (deftest test-api-operations
   (testing "API operation: "

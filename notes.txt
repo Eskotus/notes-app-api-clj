@@ -1,4 +1,5 @@
-Pool Id            us-east-1_G25s7dUDi
+User Pool Id            us-east-1_G25s7dUDi
 Pool ARN           arn:aws:cognito-idp:us-east-1:771777619346:userpool/us-east-1_G25s7dUDi
 App client idp     1im6a36mes510oabud7cd7jte6
 
+Identity pool ID   us-east-1:599fa785-1b2d-4682-ad95-91fd32eba5d8

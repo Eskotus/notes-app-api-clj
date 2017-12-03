@@ -13,7 +13,7 @@ aws cognito-idp admin-confirm-sign-up \
 
 
 aws lambda create-function \
-  --function-name notes-app-create-note \
+  --function-name notes-app-api-prod-create \
   --handler create \
   --runtime java8 \
   --memory 512 \
@@ -22,11 +22,11 @@ aws lambda create-function \
   --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
 
 aws lambda update-function-code \
-  --function-name notes-app-create-note \
+  --function-name notes-app-api-prod-create \
   --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
 
 aws lambda create-function \
-  --function-name notes-app-get-note \
+  --function-name notes-app-api-prod-get \
   --handler get \
   --runtime java8 \
   --memory 512 \
@@ -35,5 +35,58 @@ aws lambda create-function \
   --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
 
 aws lambda update-function-code \
-  --function-name notes-app-get-note \
+  --function-name notes-app-api-prod-get \
   --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda create-function \
+  --function-name notes-app-api-prod-list \
+  --handler list \
+  --runtime java8 \
+  --memory 512 \
+  --timeout 10 \
+  --role arn:aws:iam::771777619346:role/cljs-lambda-default \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda update-function-code \
+  --function-name notes-app-api-prod-list \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda create-function \
+  --function-name notes-app-api-prod-update \
+  --handler update \
+  --runtime java8 \
+  --memory 512 \
+  --timeout 10 \
+  --role arn:aws:iam::771777619346:role/cljs-lambda-default \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda update-function-code \
+  --function-name notes-app-api-prod-update \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda create-function \
+  --function-name notes-app-api-prod-delete \
+  --handler delete \
+  --runtime java8 \
+  --memory 512 \
+  --timeout 10 \
+  --role arn:aws:iam::771777619346:role/cljs-lambda-default \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+aws lambda update-function-code \
+  --function-name notes-app-api-prod-delete \
+  --zip-file fileb://./target/notes-app-api-clj-0.1.0-standalone.jar
+
+
+apig-test \
+--username='admin@example.com' \
+--password='Passw0rd!' \
+--user-pool-id='us-east-1_G25s7dUDi' \
+--app-client-id='1im6a36mes510oabud7cd7jte6' \
+--cognito-region='us-east-1' \
+--identity-pool-id='us-east-1:599fa785-1b2d-4682-ad95-91fd32eba5d8' \
+--invoke-url='https://uhawxc57sa.execute-api.us-east-1.amazonaws.com/prod/' \
+--api-gateway-region='us-east-1' \
+--path-template='notes' \
+--method='POST' \
+--body='{"content":"hello world","attachment":"hello.jpg"}'
